@@ -1,4 +1,4 @@
-# IPTRADE API - Expert Advisor Integration Guide
+# COPIER API - Expert Advisor Integration Guide
 
 > **Complete documentation for MetaTrader Expert Advisors**
 > Version: 1.0.0
@@ -27,10 +27,10 @@ http://localhost:80/api
 ```http
 Content-Type: application/json
 x-account-id: {accountId}
-x-api-key: IPTRADE_APIKEY
+x-api-key: COPIER_APIKEY
 ```
 
-> **🔑 Fixed API Key**: All MT4/MT5 accounts must use the same fixed API key `IPTRADE_APIKEY` to authenticate their requests. This key validates that orders come from authorized sources, while `x-account-id` identifies the specific account.
+> **🔑 Fixed API Key**: All MT4/MT5 accounts must use the same fixed API key `COPIER_APIKEY` to authenticate their requests. This key validates that orders come from authorized sources, while `x-account-id` identifies the specific account.
 
 ---
 
@@ -43,7 +43,7 @@ x-api-key: IPTRADE_APIKEY
 ```http
 GET /api/orders/account-type
 x-account-id: {accountId}
-x-api-key: IPTRADE_APIKEY
+x-api-key: COPIER_APIKEY
 ```
 
 **Responses:**
@@ -77,7 +77,7 @@ x-api-key: IPTRADE_APIKEY
 ```http
 POST /api/orders/neworder
 x-account-id: {masterAccountId}
-x-api-key: IPTRADE_APIKEY
+x-api-key: COPIER_APIKEY
 Content-Type: application/x-www-form-urlencoded
 
 counter=1&id0=12345&sym0=EURUSD&typ0=buy&lot0=0.1&price0=1.12345&sl0=1.12000&tp0=1.13000&account0={masterAccountId}
@@ -95,7 +95,7 @@ OK
 ```http
 GET /api/trading-config/master_123
 x-account-id: master_123
-x-api-key: IPTRADE_APIKEY
+x-api-key: COPIER_APIKEY
 ```
 
 ### For SLAVE Accounts
@@ -107,7 +107,7 @@ x-api-key: IPTRADE_APIKEY
 ```http
 GET /api/orders/neworder
 x-account-id: {slaveAccountId}
-x-api-key: IPTRADE_APIKEY
+x-api-key: COPIER_APIKEY
 ```
 
 **Response (when master is online and has orders):**
@@ -155,7 +155,7 @@ x-api-key: IPTRADE_APIKEY
 ```http
 POST /api/accounts/ping
 x-account-id: {accountId}
-x-api-key: IPTRADE_APIKEY
+x-api-key: COPIER_APIKEY
 Content-Type: application/json
 
 {
@@ -278,7 +278,7 @@ bool GetPendingOrders()
       // Check for empty response (master offline or not registered)
       if(result_string == "0")
       {
-         UpdateChartMessage("⏸️ IPTRADE STATUS: NO ORDERS\\nMaster offline or not registered\\nExisting positions maintained");
+         UpdateChartMessage("⏸️ COPIER STATUS: NO ORDERS\\nMaster offline or not registered\\nExisting positions maintained");
          return true; // Success but no orders - DO NOT close existing positions
       }
       
@@ -290,7 +290,7 @@ bool GetPendingOrders()
       
       if(lineCount > 1) // Has orders (more than just counter)
       {
-         UpdateChartMessage("📈 IPTRADE STATUS: ORDERS RECEIVED\\nProcessing new trades from master");
+         UpdateChartMessage("📈 COPIER STATUS: ORDERS RECEIVED\\nProcessing new trades from master");
          
          for(int i = 1; i < lineCount; i++) // Skip counter line
          {
@@ -311,11 +311,11 @@ bool GetPendingOrders()
       else if(lineCount == 1 && StringFind(lines[0], "[") >= 0)
       {
          // Only counter received (master online but no orders)
-         UpdateChartMessage("⏸️ IPTRADE STATUS: NO ORDERS\\nMaster online but no pending orders\\nExisting positions maintained");
+         UpdateChartMessage("⏸️ COPIER STATUS: NO ORDERS\\nMaster online but no pending orders\\nExisting positions maintained");
       }
       else
       {
-         UpdateChartMessage("⏸️ IPTRADE STATUS: NO ORDERS\\nNo pending orders from master\\nExisting positions maintained");
+         UpdateChartMessage("⏸️ COPIER STATUS: NO ORDERS\\nNo pending orders from master\\nExisting positions maintained");
       }
       return true;
    }
@@ -555,7 +555,7 @@ These variables are **FIXED** and should **NOT** be changed by users:
 ```mql5
 // FIXED VARIABLES - DO NOT MODIFY
 #define API_BASE_URL "http://localhost:80/api"
-#define API_KEY "IPTRADE_APIKEY"
+#define API_KEY "COPIER_APIKEY"
 #define PING_INTERVAL 50        // seconds - fixed by system
 #define POLL_INTERVAL 5         // seconds - fixed by system (slaves only)
 #define MAX_RETRIES 3           // fixed by system
@@ -699,8 +699,8 @@ bool TestAPIConnection()
 
 ## 📝 Important Notes
 
-1. **Authentication:** Use MT4/MT5 account number as `x-account-id` header and fixed API key `IPTRADE_APIKEY`.
-2. **Fixed API Key:** All accounts use the same API key `IPTRADE_APIKEY` to authenticate requests.
+1. **Authentication:** Use MT4/MT5 account number as `x-account-id` header and fixed API key `COPIER_APIKEY`.
+2. **Fixed API Key:** All accounts use the same API key `COPIER_APIKEY` to authenticate requests.
 3. **Data Format:** Master sends data in form-urlencoded format, slave receives CSV.
 4. **Multiple Orders:** A master can send multiple orders using indices (id0, id1, etc.).
 5. **Polling:** Slave accounts should poll every 5 seconds maximum.
@@ -720,7 +720,7 @@ The EA should display status messages on the chart to keep users informed. Use `
 
 #### For Pending Accounts:
 ```
-🔄 IPTRADE STATUS: PENDING CONFIGURATION
+🔄 COPIER STATUS: PENDING CONFIGURATION
 Account: 123456
 Status: Awaiting administrator setup
 Action: Contact administrator to configure as master/slave
@@ -729,7 +729,7 @@ Last Check: 2024-01-01 12:00:00
 
 #### For Master Accounts:
 ```
-✅ IPTRADE STATUS: MASTER ACTIVE
+✅ COPIER STATUS: MASTER ACTIVE
 Account: 123456
 Status: Sending trades to slaves
 Connected Slaves: 3
@@ -739,7 +739,7 @@ Last Ping: 2024-01-01 12:00:00
 
 #### For Slave Accounts:
 ```
-📥 IPTRADE STATUS: SLAVE ACTIVE
+📥 COPIER STATUS: SLAVE ACTIVE
 Account: 123456
 Status: Receiving trades from master
 Master: MASTER001
@@ -751,7 +751,7 @@ Last Ping: 2024-01-01 12:00:00
 
 #### Connection Errors:
 ```
-❌ IPTRADE ERROR: CONNECTION FAILED
+❌ COPIER ERROR: CONNECTION FAILED
 Account: 123456
 Error: Cannot connect to server
 Action: Check internet connection
@@ -760,7 +760,7 @@ Retry: 30 seconds
 
 #### Authentication Errors:
 ```
-❌ IPTRADE ERROR: AUTHENTICATION FAILED
+❌ COPIER ERROR: AUTHENTICATION FAILED
 Account: 123456
 Error: Invalid API key or account ID
 Action: Check EA settings
@@ -769,7 +769,7 @@ Status: Disabled
 
 #### Permission Errors:
 ```
-❌ IPTRADE ERROR: ACCESS DENIED
+❌ COPIER ERROR: ACCESS DENIED
 Account: 123456
 Error: Account not configured for this operation
 Action: Contact administrator
@@ -778,7 +778,7 @@ Status: Disabled
 
 #### Server Errors:
 ```
-⚠️ IPTRADE WARNING: SERVER ERROR
+⚠️ COPIER WARNING: SERVER ERROR
 Account: 123456
 Error: Internal server error
 Action: Retrying in 30 seconds
@@ -801,7 +801,7 @@ void UpdateChartMessage(string status, string error = "")
    
    if(error != "")
    {
-      message = "❌ IPTRADE ERROR: " + error + "\n";
+      message = "❌ COPIER ERROR: " + error + "\n";
       message += "Account: " + IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN)) + "\n";
       message += "Time: " + TimeToString(TimeCurrent()) + "\n";
       message += "Action: Check connection and settings";
@@ -827,15 +827,15 @@ void HandleAPIResponse(int responseCode, string response)
       case 200:
          if(StringFind(response, "pending") >= 0)
          {
-            UpdateChartMessage("🔄 IPTRADE STATUS: PENDING CONFIGURATION\nContact administrator to setup account");
+            UpdateChartMessage("🔄 COPIER STATUS: PENDING CONFIGURATION\nContact administrator to setup account");
          }
          else if(StringFind(response, "master") >= 0)
          {
-            UpdateChartMessage("✅ IPTRADE STATUS: MASTER ACTIVE\nSending trades to slaves");
+            UpdateChartMessage("✅ COPIER STATUS: MASTER ACTIVE\nSending trades to slaves");
          }
          else if(StringFind(response, "slave") >= 0)
          {
-            UpdateChartMessage("📥 IPTRADE STATUS: SLAVE ACTIVE\nReceiving trades from master");
+            UpdateChartMessage("📥 COPIER STATUS: SLAVE ACTIVE\nReceiving trades from master");
          }
          break;
          
